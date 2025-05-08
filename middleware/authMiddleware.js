@@ -15,8 +15,8 @@ const authenticateToken = async (req, res, next) => {
       }
 
       const employer = await Employer.findById(decode.id).select("-password");
-      if (!employer || !employer.isAuthorized) {
-        return res.status(403).json({ message: "You are not authorized" }); //check employer
+      if (!employer) {
+        return res.status(401).json({ message: "Unauthorized" });  //find employer
       }
       req.user = employer;
       return next();

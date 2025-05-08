@@ -4,26 +4,26 @@ const Employer = require("../models/Employer");
 // get all jobs
 exports.getAllJobs = async (req, res) => {
     try {
-        const { title, location, skills } = req.query;  
-        let filter = {};
+        // const { title, location, skills } = req.query;  
+        // let filter = {};
 
-        if (title) {
-            filter.title = { $regex: title, $options: "i" };
-        }
-        if (location) {
-            filter.location = { $regex: location, $options: "i" };
-        }
-        if (skills) {
-            filter.skillsRequired = { $in: skills.split(",") };
-        }
+        // if (title) {
+        //     filter.title = { $regex: title, $options: "i" };
+        // }
+        // if (location) {
+        //     filter.location = { $regex: location, $options: "i" };
+        // }
+        // if (skills) {
+        //     filter.skillsRequired = { $in: skills.split(",") };
+        // }
 
-        // If the user is employer, filter jobs by the employer's ID
-        if (req.user && req.user.role === "employer") {
-            filter.employer = req.user.id;
-        }
+        // // If the user is employer, filter jobs by the employer's ID
+        // if (req.user && req.user.role === "employer") {
+        //     filter.employer = req.user.id;
+        // }
         
 
-        const jobs = await Job.find(filter).populate("employer", "company");
+        const jobs = await Job.find().populate("employer", "company");
         if (!jobs || jobs.length === 0) {
             return res.status(404).json({ message: "No jobs found" });
         }
@@ -33,7 +33,7 @@ exports.getAllJobs = async (req, res) => {
     }
 };
 
-//get job by id
+//get job by job id
 exports.getJobById = async (req, res) => {
     try {
         const job = await Job.findById(req.params.id).populate("employer", "company");
@@ -68,6 +68,21 @@ exports.createJob = async (req, res) => {
       res.status(400).json({ message: error.message });
     }
   };
+
+  // get jobs by employer id --employers
+exports.getJobsByEmployerId = async (req, res) => {
+    try {
+        const employerId = req.user.id;
+        const jobs = await Job.find({ employer: employerId }).populate("employer", "company");
+
+        if (!jobs || jobs.length === 0) {
+            return res.status(404).json({ message: "No jobs found for this employer" });
+        }
+        res.json(jobs);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
 // update job --employers
 exports.updateJob = async (req, res) => {

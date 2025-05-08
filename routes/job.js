@@ -6,6 +6,7 @@ const {authenticateToken} = require("../middleware/authMiddleware")
 
 router.get("/", jobController.getAllJobs)
 router.get("/:id", jobController.getJobById)
+router.get("/employer/:id", authenticateToken, jobController.getJobsByEmployerId)
 router.post("/", authenticateToken, jobController.createJob)  
 router.put("/:id", authenticateToken, jobController.updateJob)
 router.delete("/:id", authenticateToken, jobController.deleteJob)
